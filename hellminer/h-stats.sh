@@ -26,43 +26,24 @@ local maxDelay=120
 echo "diffTime $diffTime"
 if [ "$diffTime" -lt "$maxDelay" ]; then
 	khs=0
-	logs=(`find /tmp/rrminer/ -name rrminer.*.log | sort`)
+	log="/tmp/tonminer.log"
 
-	count=${#logs[@]}
 	now=`date +%s`
-	for ((i=0; $i < $count; i++)); do
-		log=${logs[$i]}
-		bus_number=`echo $log | sed 's#/tmp/rrminer/rrminer.##' | sed 's/.log//'`
-		bus_numbers[$i]=`printf "%d" 0x$bus_number`
-		hr[$i]=0
-		lastUpdate=`stat -c %Y $log`
-		refresh=$(($now - $lastUpdate))
-		if [[ $refresh -le 15 ]]; then
-			hrPart=`tail -n 100 $log | grep speed | tail -n 1`
-			hrRaw=`echo $hrPart | sed 's/.*speed: \([.+0-9e]*\).*/\1/'`
-			if [[ ! -z $hrRaw ]]; then
-				if [[ `echo $hrRaw | grep -c 'e+'` -gt 0 ]]; then
-					hsR=`echo "scale=0; $hrRaw " | sed 's/e+/*10^/' | bc -l`
-					hs[$i]=`echo "scale=0; $hsR / 1000000" | bc -l`
-				else
-					x=1000
-					if [[ `echo $hrPart | grep -c 'Mhash'` -gt 0 ]]; then
-						x=1
-					elif [[ `echo $hrPart | grep -c 'Ghash'` -gt 0 ]]; then
-						x=0.1
-					fi
-
-					hs[$i]=`echo "scale=0; $hrRaw * $x" | bc -l`
-				fi
-			else
-				hs[$i]=0
-			fi
-			fan[$i]=0
-			temp[$i]=0
-			khs=`echo "scale=0; $khs + ${hs[$i]} * 1000" | bc -l`
+	i=0
+	lastUpdate=`stat -c %Y $log`
+	refresh=$(($now - $lastUpdate))
+	if [[ $refresh -le 15 ]]; then
+		hrPart=`tail -n 100 $log | grep "Total system hashrate" | tail -n 1`
+		hrRaw=`echo $hrPart | sed 's/.*Total system hashrate \([.0-9]*\).*/\1/'`
+		if [[ ! -z $hrRaw ]]; then
+			hs[$i]=`echo "scale=0; $hrRaw * $x" | bc -l`
+		else
+			hs[$i]=0
 		fi
-
-	done
+		fan[$i]=0
+		temp[$i]=0
+		khs=`echo "scale=0; $khs + ${hs[$i]} * 1000" | bc -l`
+	fi
 
 	local log_name="$MINER_LOG_BASENAME.log"
 	local ver=`miner_ver`
