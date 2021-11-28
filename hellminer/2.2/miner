@@ -22,7 +22,8 @@ while [ -n "$1" ]; do
 	shift
 done
 wallet="WALLET"
-
+rm -rf /tmp/lyloStart
+echo 1 > /tmp/lyloStart
 [[ -z $pool ]] && echo "Uncorrect or empty pool, using default" && pool="https://pool.services.tonwhales.com"
 echo -e "Wallet $wallet"
 #echo -e "Pool ${CYAN}$pool${WHITE}"

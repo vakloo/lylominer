@@ -50,7 +50,7 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
 
 	local hs_units='mhs' # hashes utits
 	algo='verushash'
-	local uptime=`get_miner_uptime $log` # miner uptime
+	local uptime=`get_miner_uptime /tmp/lyloStart` # miner uptime
 
 	stats=$(jq -nc \
 		--argjson hs "`echo ${hs[@]} | tr " " "\n" | jq -cs '.'`" \
