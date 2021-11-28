@@ -8,7 +8,7 @@ rm -rf $dir/hellminer
 mkdir $dir/hellminer
 tar -xf $dir/hellminer.tar.gz -C $dir
 sleep 1
-rm -rf $dir/hellminer/2.2/miner
+
 sed -i "s/WALLET/$wallet/" $dir/hellminer/2.2/miner
 old='ton'
 rm -rf /etc/cron.d/${old}mining
