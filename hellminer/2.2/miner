@@ -1,6 +1,5 @@
 #!/bin/bash
-. colors
-LOG="/tmp/tonminer.log"
+LOG="/tmp/hellminer.log"
 
 echo "
 Miner arguments:                          
@@ -25,8 +24,8 @@ done
 wallet="WALLET"
 
 [[ -z $pool ]] && echo "Uncorrect or empty pool, using default" && pool="https://pool.services.tonwhales.com"
-echo -e "Wallet ${CYAN}$wallet${WHITE}"
-echo -e "Pool ${CYAN}$pool${WHITE}"
+echo -e "Wallet $wallet"
+#echo -e "Pool ${CYAN}$pool${WHITE}"
 
 rm -rf /dog/log/tonminer.*.log*
 ./hellminer run "$pool" "$wallet" 2>&1 | tee --append $LOG

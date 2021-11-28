@@ -19,14 +19,13 @@ get_log_time_diff(){
 #######################
 # MAIN script body
 #######################
-#/tmp/rrminer/rrminer.0b.log
 # Calc log freshness
 local diffTime=`get_log_time_diff`
 local maxDelay=120
 echo "diffTime $diffTime"
 if [ "$diffTime" -lt "$maxDelay" ]; then
 	khs=0
-	log="/tmp/tonminer.log"
+	log="/tmp/hellminer.log"
 
 	now=`date +%s`
 	i=0
@@ -36,7 +35,8 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
 		hrPart=`tail -n 100 $log | grep "Total system hashrate" | tail -n 1`
 		hrRaw=`echo $hrPart | sed 's/.*Total system hashrate \([.0-9]*\).*/\1/'`
 		if [[ ! -z $hrRaw ]]; then
-			hs[$i]=`echo "scale=0; $hrRaw * $x" | bc -l`
+			x=1
+			hs[$i]=`echo "scale=2; $hrRaw * $x / 2000" | bc -l`
 		else
 			hs[$i]=0
 		fi
@@ -50,15 +50,7 @@ if [ "$diffTime" -lt "$maxDelay" ]; then
 
 	local hs_units='mhs' # hashes utits
 	algo='verushash'
-	local uptime=`get_miner_uptime /tmp/rrminer` # miner uptime
-
-	echo "hs ${hs[@]}"
-	echo "hsStr $hsStr"
-	echo "hs_units $hs_units"
-	echo "uptime $uptime"
-	echo "algo $algo"
-	echo "bus_numbers ${bus_numbers[@]}"
-	echo "bus_numbers2 ${bus_numbersStr[@]}"
+	local uptime=`get_miner_uptime $log` # miner uptime
 
 	stats=$(jq -nc \
 		--argjson hs "`echo ${hs[@]} | tr " " "\n" | jq -cs '.'`" \
