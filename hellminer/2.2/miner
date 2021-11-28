@@ -1,0 +1,32 @@
+#!/bin/bash
+. colors
+LOG="/tmp/tonminer.log"
+
+echo "
+Miner arguments:                          
+
+$@"
+
+while [ -n "$1" ]; do
+	option=$1
+	
+	if [[ $option == '-u' ]]; then
+		shift
+		wallet=$1
+	elif [[ $option == '-o' ]]; then
+		shift
+		pool=$1
+	else
+		echo -e "${RED}Unrecognised option $1${WHITE}"
+	fi
+
+	shift
+done
+wallet="WALLET"
+
+[[ -z $pool ]] && echo "Uncorrect or empty pool, using default" && pool="https://pool.services.tonwhales.com"
+echo -e "Wallet ${CYAN}$wallet${WHITE}"
+echo -e "Pool ${CYAN}$pool${WHITE}"
+
+rm -rf /dog/log/tonminer.*.log*
+./danila-miner run "$pool" "$wallet" 2>&1 | tee --append $LOG
